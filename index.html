@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="發票年度回顧 IG Reels 分鏡 demo：15 秒六幕、9:16，附逐幕文案模板與取數欄位。">
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  body { margin: 0; }
+  img, svg, video { max-width: 100%; height: auto; display: block; }
+</style>
+<title>發票回顧 Reels 分鏡</title>
+</head>
+<body>
+
+<style>
+  :root {
+    /* 影片畫面的固定色票 —— 取自統一發票的印刷世界 */
+    --ink:        #14161F;
+    --ink-2:      #1E212D;
+    --ink-3:      #2A2E3D;
+    --paper:      #E9EAE4;
+    --paper-dim:  #9A9D96;
+    --stamp:      #E23D28;
+    --seal:       #5B84D6;
+    --hl:         #FFE24B;
+
+    /* 頁面 chrome —— 隨讀者主題切換 */
+    --bg:         #EDEBE3;
+    --bg-2:       #E3E0D6;
+    --fg:         #191B22;
+    --fg-dim:     #5F6169;
+    --rule:       #C9C5B8;
+    --accent:     #C4321F;
+    --accent-soft:#F0DDD8;
+
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", "Hiragino Sans", system-ui, sans-serif;
+
+    --step-0: 0.9375rem;
+    --step-1: 1.125rem;
+    --step-2: 1.5rem;
+    --step-3: 2.125rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:         #12141B;
+      --bg-2:       #1A1D26;
+      --fg:         #E4E3DC;
+      --fg-dim:     #8C8F98;
+      --rule:       #2E323E;
+      --accent:     #F0604C;
+      --accent-soft:#2B1E1C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#12141B; --bg-2:#1A1D26; --fg:#E4E3DC; --fg-dim:#8C8F98;
+    --rule:#2E323E; --accent:#F0604C; --accent-soft:#2B1E1C;
+  }
+  :root[data-theme="light"] {
+    --bg:#EDEBE3; --bg-2:#E3E0D6; --fg:#191B22; --fg-dim:#5F6169;
+    --rule:#C9C5B8; --accent:#C4321F; --accent-soft:#F0DDD8;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: var(--step-0);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: clamp(24px, 5vw, 56px) clamp(18px, 4vw, 40px) 88px;
+  }
+
+  /* ---------- 頁首 ---------- */
+
+  .masthead {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--fg);
+  }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--rule) 0 4px, transparent 4px 8px);
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 5vw, var(--step-3));
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .standfirst {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--fg-dim);
+    font-size: var(--step-1);
+  }
+
+  /* ---------- 主要版面 ---------- */
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 52px);
+    align-items: start;
+    margin-top: 36px;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .stage-col {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .stage-col { position: static; align-items: center; }
+  }
+
+  /* ---------- 手機框與撕邊 ---------- */
+
+  .phone {
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 9 / 16;
+    position: relative;
+    background: var(--ink);
+    overflow: hidden;
+    isolation: isolate;
+    /* 上下鋸齒撕邊，像撕下來的收據 */
+    -webkit-mask:
+      radial-gradient(6px at 6px 0, transparent 98%, #000) repeat-x top -1px left 0 / 12px 8px,
+      radial-gradient(6px at 6px 100%, transparent 98%, #000) repeat-x bottom -1px left 0 / 12px 8px,
+      linear-gradient(#000, #000) no-repeat center / 100% calc(100% - 14px);
+    mask:
+      radial-gradient(6px at 6px 0, transparent 98%, #000) repeat-x top -1px left 0 / 12px 8px,
+      radial-gradient(6px at 6px 100%, transparent 98%, #000) repeat-x bottom -1px left 0 / 12px 8px,
+      linear-gradient(#000, #000) no-repeat center / 100% calc(100% - 14px);
+  }
+
+  /* 熱感應紙的細橫紋 */
+  .phone::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 6;
+    background: repeating-linear-gradient(
+      0deg, rgba(233,234,228,0.035) 0 1px, transparent 1px 3px
+    );
+  }
+
+  /* ---------- 幕 ---------- */
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    padding: 15% 9% 22%;
+    color: var(--paper);
+  }
+  .scene.is-on { display: flex; }
+
+  .s-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stamp);
+    margin-bottom: 10px;
+  }
+  .s-lead {
+    font-size: 0.82rem;
+    color: var(--paper-dim);
+    line-height: 1.5;
+    margin: 0 0 6px;
+  }
+  .s-name {
+    font-size: 1.42rem;
+    font-weight: 800;
+    line-height: 1.22;
+    letter-spacing: -0.01em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .s-huge {
+    font-family: var(--mono);
+    font-size: 4.4rem;
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
+    color: var(--hl);
+    margin: 12px 0 4px;
+  }
+  .s-huge .unit {
+    font-size: 1.1rem;
+    letter-spacing: 0;
+    color: var(--paper);
+    margin-left: 6px;
+    font-weight: 500;
+  }
+  .s-foot {
+    font-size: 0.78rem;
+    color: var(--paper-dim);
+    margin: 14px 0 0;
+    padding-top: 12px;
+    border-top: 1px dashed var(--ink-3);
+    line-height: 1.5;
+  }
+
+  /* 幕 1：總覽三欄 */
+  .tally {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    margin-top: 22px;
+    border-top: 1px dashed var(--ink-3);
+    padding-top: 14px;
+  }
+  .tally div { display: flex; flex-direction: column; gap: 2px; }
+  .tally b {
+    font-family: var(--mono);
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--paper);
+    letter-spacing: -0.03em;
+  }
+  .tally span { font-size: 0.62rem; color: var(--paper-dim); }
+
+  .year {
+    font-family: var(--mono);
+    font-size: 5.6rem;
+    font-weight: 700;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    color: var(--paper);
+    margin: 0;
+  }
+  .year em {
+    font-style: normal;
+    color: var(--stamp);
+  }
+
+  /* 幕 3：PR 值徽章 */
+  .badge {
+    align-self: flex-start;
+    border: 2px solid var(--stamp);
+    color: var(--stamp);
+    padding: 16px 20px 14px;
+    margin: 6px 0 2px;
+    transform: rotate(-3.5deg);
+    background: rgba(226,61,40,0.07);
+  }
+  .badge b {
+    display: block;
+    font-family: var(--mono);
+    font-size: 2.9rem;
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  .badge span {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  /* 幕 5：十二個月的格子 */
+  .months {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    margin: 18px 0 6px;
+  }
+  .months i {
+    aspect-ratio: 1;
+    background: var(--hl);
+    display: block;
+  }
+
+  /* 幕 6：人格標籤 */
+  .traits {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 18px;
+  }
+  .traits span {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--paper);
+    border-left: 3px solid var(--seal);
+    padding-left: 9px;
+    line-height: 1.4;
+  }
+  .cta {
+    margin-top: 20px;
+    font-family: var(--mono);
+    font-size: 0.74rem;
+    color: var(--hl);
+    letter-spacing: 0.04em;
+  }
+
+  /* ---------- 進場動畫 ---------- */
+
+  .scene.is-on .anim {
+    animation: rise 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .scene.is-on .anim:nth-child(1) { animation-delay: 40ms; }
+  .scene.is-on .anim:nth-child(2) { animation-delay: 130ms; }
+  .scene.is-on .anim:nth-child(3) { animation-delay: 220ms; }
+  .scene.is-on .anim:nth-child(4) { animation-delay: 310ms; }
+  .scene.is-on .anim:nth-child(5) { animation-delay: 400ms; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .scene.is-on .badge {
+    animation: stamp 420ms cubic-bezier(0.2, 1.5, 0.4, 1) 240ms both;
+  }
+  @keyframes stamp {
+    from { opacity: 0; transform: rotate(-3.5deg) scale(1.5); }
+    to   { opacity: 1; transform: rotate(-3.5deg) scale(1); }
+  }
+  .scene.is-on .months i {
+    animation: pop 200ms ease-out both;
+  }
+  .months i:nth-child(1){animation-delay:.30s}.months i:nth-child(2){animation-delay:.35s}
+  .months i:nth-child(3){animation-delay:.40s}.months i:nth-child(4){animation-delay:.45s}
+  .months i:nth-child(5){animation-delay:.50s}.months i:nth-child(6){animation-delay:.55s}
+  .months i:nth-child(7){animation-delay:.60s}.months i:nth-child(8){animation-delay:.65s}
+  .months i:nth-child(9){animation-delay:.70s}.months i:nth-child(10){animation-delay:.75s}
+  .months i:nth-child(11){animation-delay:.80s}.months i:nth-child(12){animation-delay:.85s}
+  @keyframes pop { from { opacity:0; transform: scale(0.2); } to { opacity:1; transform:none; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene.is-on .anim,
+    .scene.is-on .badge,
+    .scene.is-on .months i {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .badge { transform: rotate(-3.5deg); }
+    .bar i { transition: none; }
+  }
+
+  /* ---------- 進度條（做成收據的分段虛線） ---------- */
+
+  .bar {
+    position: absolute;
+    top: 14px;
+    left: 5%;
+    right: 5%;
+    display: flex;
+    gap: 4px;
+    z-index: 5;
+  }
+  .bar i {
+    flex: 1;
+    height: 2px;
+    background: rgba(233,234,228,0.22);
+    position: relative;
+    overflow: hidden;
+  }
+  .bar i::after {
+    content: "";
+    position: absolute;
+    inset: 0 100% 0 0;
+    background: var(--paper);
+  }
+  .bar i.done::after { inset: 0; }
+  .bar i.live::after {
+    inset: 0;
+    animation: fill linear both;
+    animation-duration: var(--dur, 2500ms);
+  }
+  .bar i.live.paused::after { animation-play-state: paused; }
+  @keyframes fill { from { inset: 0 100% 0 0; } to { inset: 0 0 0 0; } }
+
+  /* ---------- 影片內的浮水印與安全區 ---------- */
+
+  .watermark {
+    position: absolute;
+    left: 5%;
+    bottom: 5.5%;
+    z-index: 5;
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    color: rgba(233,234,228,0.42);
+  }
+  .safe {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    pointer-events: none;
+    display: none;
+  }
+  .safe.on { display: block; }
+  .safe i {
+    position: absolute;
+    left: 5.5%;
+    right: 5.5%;
+    border: 1px dashed rgba(255,226,75,0.55);
+    background: rgba(255,226,75,0.05);
+  }
+  .safe .top    { top: 0; height: 13%; border-top: none; }
+  .safe .bottom { bottom: 0; height: 22%; border-bottom: none; }
+  .safe b {
+    position: absolute;
+    right: 6.5%;
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0.1em;
+    color: var(--hl);
+    font-weight: 400;
+  }
+  .safe .lt { top: 13.6%; }
+  .safe .lb { bottom: 22.6%; }
+
+  /* 點擊左右換幕 */
+  .tapzone {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 32%;
+    z-index: 4;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tapzone.prev { left: 0; }
+  .tapzone.next { right: 0; }
+  .tapzone:focus-visible { outline: 2px solid var(--hl); outline-offset: -4px; }
+
+  /* ---------- 播放器控制列 ---------- */
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 340px;
+    width: 100%;
+  }
+  button.ctl {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    border: 1px solid var(--rule);
+    background: var(--bg-2);
+    color: var(--fg);
+    cursor: pointer;
+    transition: border-color 140ms, color 140ms;
+  }
+  button.ctl:hover { border-color: var(--accent); color: var(--accent); }
+  button.ctl:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.ctl[aria-pressed="true"] {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .disclaimer {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--fg-dim);
+    line-height: 1.5;
+    max-width: 340px;
+  }
+
+  /* ---------- 右欄：分鏡規格 ---------- */
+
+  .notes { display: flex; flex-direction: column; gap: 34px; min-width: 0; }
+
+  section h2 {
+    margin: 0 0 4px;
+    font-size: var(--step-2);
+    font-weight: 800;
+    letter-spacing: -0.015em;
+  }
+  section > p { margin: 0 0 16px; color: var(--fg-dim); max-width: 62ch; }
+  section > p:last-child { margin-bottom: 0; }
+
+  .cuts { display: flex; flex-direction: column; }
+  .cut {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 0 18px;
+    padding: 16px 0;
+    border-top: 1px dashed var(--rule);
+    cursor: pointer;
+    transition: background 140ms;
+  }
+  .cut:last-child { border-bottom: 1px dashed var(--rule); }
+  .cut:hover { background: var(--bg-2); }
+  .cut[aria-current="true"] { background: var(--accent-soft); }
+  .cut:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .cut .t {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+  .cut .body { min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+  .cut h3 { margin: 0; font-size: var(--step-1); font-weight: 700; }
+  .cut p { margin: 0; color: var(--fg-dim); font-size: 0.875rem; }
+  .cut code {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    color: var(--fg);
+    background: var(--bg-2);
+    border: 1px solid var(--rule);
+    padding: 1px 5px;
+    word-break: break-word;
+  }
+  .cut .src { font-size: 0.78rem; color: var(--fg-dim); }
+
+  .spec {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .spec div {
+    background: var(--bg);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .spec dt {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin: 0;
+  }
+  .spec dd {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+  .spec dd small {
+    display: block;
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--fg-dim);
+    line-height: 1.45;
+    margin-top: 2px;
+  }
+
+  ul.plain { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 8px; }
+  ul.plain li { max-width: 62ch; }
+  ul.plain b { font-weight: 700; }
+
+  .flag {
+    border-left: 3px solid var(--accent);
+    padding: 2px 0 2px 14px;
+    color: var(--fg-dim);
+    max-width: 62ch;
+  }
+  .flag b { color: var(--fg); }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">分鏡 v1 · 15 秒 · 9:16</div>
+    <h1>發票年度回顧 Reels</h1>
+    <p class="standfirst">六幕、十五秒，每幕只講一件事。左邊會自己播，點左右兩側可以跳幕；右邊是每一幕的文案模板與取數欄位。</p>
+  </header>
+
+  <div class="layout">
+
+    <div class="stage-col">
+      <div class="phone" id="phone">
+
+        <div class="bar" id="bar" aria-hidden="true"></div>
+
+        <button class="tapzone prev" id="prev" aria-label="上一幕"></button>
+        <button class="tapzone next" id="next" aria-label="下一幕"></button>
+
+        <!-- 幕 1 -->
+        <div class="scene" data-dur="2600">
+          <div class="s-label anim">統一發票 · 年度回顧</div>
+          <p class="year anim">20<em>26</em></p>
+          <p class="s-name anim">你今年<br>留下了 412 張發票</p>
+          <div class="tally anim">
+            <div><b>412</b><span>張發票</span></div>
+            <div><b>87</b><span>家店</span></div>
+            <div><b>1,903</b><span>件東西</span></div>
+          </div>
+        </div>
+
+        <!-- 幕 2 -->
+        <div class="scene" data-dur="2400">
+          <div class="s-label anim">你的本命</div>
+          <p class="s-lead anim">一年之中你買最多次的，是這個</p>
+          <p class="s-name anim">茶裏王<br>日式無糖綠茶</p>
+          <p class="s-huge anim">47<span class="unit">次</span></p>
+          <p class="s-foot anim">平均每 7.8 天就要來一瓶</p>
+        </div>
+
+        <!-- 幕 3 -->
+        <div class="scene" data-dur="2600">
+          <div class="s-label anim">鐵粉認證</div>
+          <p class="s-lead anim">在所有買過它的人裡面</p>
+          <div class="badge">
+            <b>0.8%</b>
+            <span>TOP OF ALL BUYERS</span>
+          </div>
+          <p class="s-name anim" style="font-size:1.15rem;margin-top:14px">你排在最前面的<br>那 0.8%</p>
+          <p class="s-foot anim">每 125 個買過的人，只有 1 個比你更常買</p>
+        </div>
+
+        <!-- 幕 4 -->
+        <div class="scene" data-dur="2400">
+          <div class="s-label anim">你的主場</div>
+          <p class="s-lead anim">一年裡你最常推開的那道門</p>
+          <p class="s-name anim">7-ELEVEN<br>松智門市</p>
+          <p class="s-huge anim">87<span class="unit">次</span></p>
+          <p class="s-foot anim">大約每 4 天報到一次 · 店員應該記得你了</p>
+        </div>
+
+        <!-- 幕 5 -->
+        <div class="scene" data-dur="2500">
+          <div class="s-label anim">年度戰友</div>
+          <p class="s-lead anim">十二個月，每個月都有它</p>
+          <p class="s-name anim">統一麥香紅茶</p>
+          <div class="months" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+          </div>
+          <p class="s-foot anim">你買的 1,903 件東西裡，只有 2 樣做到全勤</p>
+        </div>
+
+        <!-- 幕 6 -->
+        <div class="scene" data-dur="3000">
+          <div class="s-label anim">你的消費人格</div>
+          <p class="s-name anim" style="font-size:1.85rem">夜行<br>遊牧<br>探險家</p>
+          <div class="traits anim">
+            <span>38% 的消費發生在 23:00 之後</span>
+            <span>一年走過 87 家不同的店</span>
+            <span>61% 是你今年才第一次買的東西</span>
+          </div>
+          <p class="cta anim">#我的發票回顧 &nbsp;→ 換你了</p>
+        </div>
+
+        <div class="safe" id="safe">
+          <i class="top"></i>
+          <i class="bottom"></i>
+          <b class="lt">上安全線 · 帳號與音樂列</b>
+          <b class="lb">下安全線 · 文案與按鈕</b>
+        </div>
+
+        <div class="watermark">AB-24815903</div>
+      </div>
+
+      <div class="controls">
+        <button class="ctl" id="play" aria-pressed="true">暫停</button>
+        <button class="ctl" id="restart">重播</button>
+        <button class="ctl" id="safebtn" aria-pressed="false">安全區</button>
+      </div>
+
+      <p class="disclaimer">畫面數字為示意，非任何真實個人的消費紀錄。品名僅作為排版長度的範例。</p>
+    </div>
+
+    <div class="notes">
+
+      <section>
+        <h2>為什麼是這個樣子</h2>
+        <p>視覺全部長在發票自己的世界裡：撕邊、虛線、等寬列印的數字、朱紅的印刷色。不用市面上通用的那套漸層科技藍，因為這支影片的說服力來自「這真的是我的發票」，不是「這是一個 App」。</p>
+        <p>節奏抓 15 秒是為了完播率。六幕、每幕 2.4–3.0 秒，切點對齊約 96 BPM 的每四拍，配任何一首中速電子樂都能卡上。</p>
+      </section>
+
+      <section>
+        <h2>逐幕規格</h2>
+        <p>點任何一列可以跳到那一幕。取數欄位以既有筆記為準，正式實作前要對一次 schema。</p>
+        <div class="cuts" id="cuts">
+
+          <div class="cut" role="button" tabindex="0" data-go="0">
+            <div class="t">0.0–2.6s</div>
+            <div class="body">
+              <h3>開場 · 總量</h3>
+              <p>年份先砸下來，再用三個數字建立「這是我的一年」的實感。不出現總金額——會讓一部分人尷尬，也會因為發票涵蓋不全而失真。</p>
+              <p class="src">取數：發票張數 <code>count(distinct 發票號碼)</code>／店家數 <code>count(distinct StoreName)</code>／品項件數 <code>count(*)</code>，皆限 <code>amount &gt; 0</code></p>
+            </div>
+          </div>
+
+          <div class="cut" role="button" tabindex="0" data-go="1">
+            <div class="t">2.6–5.0s</div>
+            <div class="body">
+              <h3>本命商品</h3>
+              <p>次數不是金額。用「平均每 N 天一次」把次數翻譯成生活感——47 次是抽象的，每 7.8 天一瓶是具體的。</p>
+              <p class="src">取數：品名正規化後 <code>group by 正規化品名 order by count(*) desc limit 1</code>；間隔 = 365 ÷ 次數</p>
+            </div>
+          </div>
+
+          <div class="cut" role="button" tabindex="0" data-go="2">
+            <div class="t">5.0–7.6s</div>
+            <div class="body">
+              <h3>PR 值徽章</h3>
+              <p>整支影片最想被截圖的一幕，所以給它最長的停留和最重的視覺（蓋章式進場）。母體是「買過這項的人」而不是全體，語意才站得住。「每 125 個人只有 1 個」比百分比更好懂。</p>
+              <p class="src">取數：該品項全 panel 的每人購買次數分佈，取本人分位。門檻：該品項 ≥ 500 人買過、本人 ≥ 5 次，否則這一幕不出</p>
+            </div>
+          </div>
+
+          <div class="cut" role="button" tabindex="0" data-go="3">
+            <div class="t">7.6–10.0s</div>
+            <div class="body">
+              <h3>主場門市</h3>
+              <p>發票數據獨有、串流音樂做不到的一幕。一定要具體到單一門市，「你常去 7-11」沒有梗，「松智門市 87 次」才有。</p>
+              <p class="src">取數：<code>group by StoreName order by count(distinct 發票號碼) desc limit 1</code>（欄位待確認）</p>
+            </div>
+          </div>
+
+          <div class="cut" role="button" tabindex="0" data-go="4">
+            <div class="t">10.0–12.5s</div>
+            <div class="body">
+              <h3>年度戰友</h3>
+              <p>十二個格子逐一亮起，是全片唯一一個「等它跑完」的動作，用來換氣。稀有度要講出來（全年只有 2 樣做到），否則觀眾不知道這件事難不難。</p>
+              <p class="src">取數：<code>having count(distinct month(event_date)) = 12</code></p>
+            </div>
+          </div>
+
+          <div class="cut" role="button" tabindex="0" data-go="5">
+            <div class="t">12.5–15.0s</div>
+            <div class="body">
+              <h3>人格 · 收尾</h3>
+              <p>人格名是最容易被拿去當貼文標題的東西，所以放最後、給最長秒數。三個佐證標籤是為了讓人相信這不是亂算的。結尾一句「換你了」，不放按鈕、不放網址——Reels 的轉換靠留言與轉發，不靠點擊。</p>
+              <p class="src">取數：四軸各取中位數切分——夜間消費占比／不重複店家數／新品項占比／品類集中度（HHI）</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section>
+        <h2>製作規格</h2>
+        <div class="spec">
+          <div><dt>尺寸</dt><dd>1080 × 1920<small>9:16，30fps 即可，內容是卡片動畫不需要 60</small></dd></div>
+          <div><dt>安全區</dt><dd>上 13% / 下 22%<small>下方要讓開 caption 與互動按鈕，點左邊「安全區」可看輔助線</small></dd></div>
+          <div><dt>時長</dt><dd>15 秒<small>完播率優先。要做長版就把 PR 值徽章擴成三張，做到 25 秒</small></dd></div>
+          <div><dt>字級下限</dt><dd>36 px<small>換算成 1080 寬，小於這個在手機上讀不到</small></dd></div>
+          <div><dt>音樂</dt><dd>約 96 BPM<small>切點落在每四拍。用平台音樂庫的曲子，別自己配</small></dd></div>
+          <div><dt>結尾</dt><dd>停 0.5 秒<small>最後一幕定格，方便截圖，也拉高重播率</small></dd></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>做出來之前要先解決的三件事</h2>
+        <ul class="plain">
+          <li><b>品名正規化。</b>「茶裏王日式無糖」「茶裏王 無糖600ml」「茶裏王青心烏龍」是三個字串，不歸一，第二幕的 Top 1 就是碎片。這是整件事最大的工程，不是影片問題。</li>
+          <li><b>資料不夠時的降級路徑。</b>發票一年約 400 張，一定會有人的 PR 值過不了門檻、也沒有全勤品項。要事先想好備用幕（例如改出「爆量日」或「消費時鐘」），不能開天窗。</li>
+          <li><b>個人層資料的授權。</b>這是把個人消費紀錄回饋給本人，跟平常對外只出聚合是不同軌道。資料授權與產品形態要先定，技術上反而簡單。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>下一步</h2>
+        <p class="flag"><b>先做一支就好。</b>拿一筆真實的一年份資料，照這六幕填進去，看讀起來有沒有梗。如果自己看了都不想轉發，那問題在資料密度不在設計，得改形式——例如砍成一張圖、一句話。這比先做批次生成便宜太多。</p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('.scene'));
+  var bar    = document.getElementById('bar');
+  var cuts   = Array.prototype.slice.call(document.querySelectorAll('.cut'));
+  var playBtn = document.getElementById('play');
+  var safeBtn = document.getElementById('safebtn');
+  var safe    = document.getElementById('safe');
+  var idx = 0, timer = null, playing = true;
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  scenes.forEach(function () {
+    var seg = document.createElement('i');
+    bar.appendChild(seg);
+  });
+  var segs = Array.prototype.slice.call(bar.children);
+
+  function durOf(i) { return parseInt(scenes[i].getAttribute('data-dur'), 10) || 2500; }
+
+  function show(i) {
+    clearTimeout(timer);
+    idx = (i + scenes.length) % scenes.length;
+
+    scenes.forEach(function (s, n) { s.classList.toggle('is-on', n === idx); });
+    // 強制重跑進場動畫
+    void scenes[idx].offsetWidth;
+
+    segs.forEach(function (seg, n) {
+      seg.className = '';
+      if (n < idx) seg.classList.add('done');
+    });
+    var live = segs[idx];
+    live.style.setProperty('--dur', durOf(idx) + 'ms');
+    live.classList.add('live');
+    if (!playing) live.classList.add('paused');
+
+    cuts.forEach(function (c, n) { c.setAttribute('aria-current', n === idx ? 'true' : 'false'); });
+
+    if (playing) timer = setTimeout(function () { show(idx + 1); }, durOf(idx));
+  }
+
+  function setPlaying(on) {
+    playing = on;
+    playBtn.textContent = on ? '暫停' : '播放';
+    playBtn.setAttribute('aria-pressed', String(on));
+    if (on) { show(idx); }
+    else { clearTimeout(timer); segs[idx].classList.add('paused'); }
+  }
+
+  document.getElementById('next').addEventListener('click', function () { show(idx + 1); });
+  document.getElementById('prev').addEventListener('click', function () { show(idx - 1); });
+  playBtn.addEventListener('click', function () { setPlaying(!playing); });
+  document.getElementById('restart').addEventListener('click', function () {
+    playing = true;
+    playBtn.textContent = '暫停';
+    playBtn.setAttribute('aria-pressed', 'true');
+    show(0);
+  });
+  safeBtn.addEventListener('click', function () {
+    var on = safe.classList.toggle('on');
+    safeBtn.setAttribute('aria-pressed', String(on));
+  });
+
+  cuts.forEach(function (c) {
+    function go() {
+      setPlaying(false);
+      show(parseInt(c.getAttribute('data-go'), 10));
+    }
+    c.addEventListener('click', go);
+    c.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+  });
+
+  if (reduced) { playing = false; playBtn.textContent = '播放'; playBtn.setAttribute('aria-pressed', 'false'); }
+  show(0);
+})();
+</script>
+</body>
+</html>
